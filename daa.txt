@@ -1,0 +1,589 @@
+//Ass1
+//fibonnaci numbers
+
+#include <bits/stdc++.h>
+using namespace std;
+
+//iteratively
+
+void fib(int n){
+	vector<int> v;
+	v.push_back(0);
+	v.push_back(1);
+	int cnt=2;
+	for(int i=2;i<=n;i++){
+		cnt++;
+		v.push_back(v[i-1]+v[i-2]);
+	}
+	cout<<"Number of iteration = "<<cnt<<endl;
+	cout<<"Value = "<<v[n-1]<<endl;
+	for(int i=0;i<n;i++){
+		cout<<v[i]<<" ";
+	}
+	cout<<endl;
+}
+
+//recursively
+int r_cnt=0;
+
+int fib_rec(int n){
+	r_cnt++;
+	if (n <= 1)
+        return n;
+    return fib_rec(n - 1) + fib_rec(n - 2);
+}
+
+int main(){
+	int n;
+	cout<<"enter value = ";
+	cin>>n;
+	cout<<"********Iterative*********"<<endl;
+	fib(n);
+	cout<<"************recursive*******"<<endl;
+	cout<<"value = "<<fib_rec(n-1)<<endl;
+	cout<<"steps= "<<r_cnt;
+	
+}
+
+
+
+//ass2
+//Implement job sequencing with deadlines using a greedy method.
+
+
+#include<bits/stdc++.h>
+using namespace std;
+
+
+// Define a structure to represent a job
+struct Job {
+    int id;        // Job ID
+    int deadline;  // Deadline of job
+    int profit;    // Profit if job is completed before or on the deadline
+};
+
+// Comparator function to sort jobs in decreasing order of profit
+bool compare(Job a, Job b) {
+    return a.profit > b.profit;
+}
+
+// Function to find the maximum profit job sequence
+void jobSequencing(vector<Job> &jobs, int n) {
+    // Sort all jobs according to decreasing order of profit
+    sort(jobs.begin(), jobs.end(), compare);
+
+    // Array to store the result of the job sequence (job IDs)
+    vector<int> result(n, -1);
+
+    // Keep track of free time slots
+    vector<bool> slot(n, false);
+
+    // Maximum profit accumulated
+    int maxProfit = 0;
+
+    // Iterate over all jobs
+    for (int i = 0; i < jobs.size(); i++) {
+        // Find a free slot for this job (starting from its deadline)
+        for (int j = min(n, jobs[i].deadline) - 1; j >= 0; j--) {
+            // If a free slot is found
+            if (!slot[j]) {
+                result[j] = jobs[i].id;   // Assign job ID to the slot
+                slot[j] = true;           // Mark the slot as occupied
+                maxProfit += jobs[i].profit; // Accumulate profit
+                break;
+            }
+        }
+    }
+
+    // Display the selected jobs and the maximum profit
+    cout << "Selected job sequence: ";
+    for (int i = 0; i < n; i++) {
+        if (result[i] != -1)
+            cout <<"--> "<< "Job" << result[i] << " ";
+    }
+    cout << "\nMaximum Profit: " << maxProfit << endl;
+}
+
+int main() {
+    int n; // Number of jobs
+    cout << "Enter the number of jobs: ";
+    cin >> n;
+
+    vector<Job> jobs(n);
+    cout << "Enter job details (id, deadline, profit):\n";
+    for (int i = 0; i < n; i++) {
+        cout << "Job " << i + 1 << ": ";
+        cin >> jobs[i].id >> jobs[i].deadline >> jobs[i].profit;
+    }
+
+    // Find the maximum number of slots available (maximum deadline)
+    int maxDeadline = 0;
+    for (int i = 0; i < n; i++) {
+        if (jobs[i].deadline > maxDeadline)
+            maxDeadline = jobs[i].deadline;
+    }
+
+    // Call the job sequencing function
+    jobSequencing(jobs, maxDeadline);
+
+    return 0;
+}
+
+
+
+
+//Write a program to implement Huffman Encoding using a greedy strategy
+
+
+#include <bits/stdc++.h> 
+using namespace std; 
+
+// A Huffman tree node 
+struct Node { 
+	char data; 
+	int freq; 
+	// Left and right child 
+	Node *left, *right; 
+
+	Node(char data, int freq) 
+	{ 
+		left = right = NULL; 
+		this->data = data; 
+		this->freq = freq; 
+	} 
+}; 
+
+// For comparison of two heap nodes (needed in min heap) 
+struct compare { 
+	bool operator()(Node* l, Node* r) 
+	{ 
+		return (l->freq > r->freq); 
+	} 
+}; 
+
+// Prints huffman codes from the root of Huffman Tree. 
+void printCodes(Node* root, string str) 
+{ 
+	if (!root) 
+		return; 
+
+	if (root->data != '$') 
+		cout << root->data << ": " << str << "\n"; 
+
+	printCodes(root->left, str + "0"); 
+	printCodes(root->right, str + "1"); 
+} 
+
+// The main function that builds a Huffman Tree and 
+// print codes by traversing the built Huffman Tree 
+void HuffmanCodes(vector<pair<char,int>> &data, int size) 
+{ 
+	struct Node *left, *right, *top; 
+
+	// Create a min heap & inserts all characters of data[] 
+	priority_queue<Node*, vector<Node*>, compare> minHeap; 
+
+	for (int i = 0; i < size; ++i){ 
+		minHeap.push(new Node(data[i].first, data[i].second)); 
+	}
+
+	// Iterate while size of heap doesn't become 1 
+	while (minHeap.size() != 1) { 
+		// Extract the two minimum  freq items from min heap 
+		left = minHeap.top(); 
+		minHeap.pop(); 
+
+		right = minHeap.top(); 
+		minHeap.pop(); 
+
+		top = new Node('$',left->freq + right->freq); 
+
+		top->left = left; 
+		top->right = right; 
+
+		minHeap.push(top); 
+	} 
+
+	// Print Huffman codes using the Huffman tree built above 
+	printCodes(minHeap.top(), ""); 
+} 
+
+int main() 
+{ 
+
+	int n;
+	cout<<"Enter number of values = ";
+	cin>>n;
+	vector<pair<char,int>> val;
+	for(int i=0;i<n;i++){
+		char c;
+		int freq;
+		cin>>c>>freq;
+		val.push_back({c,freq});
+	}
+	// char arr[] = { 'a', 'b', 'c', 'd', 'e', 'f' }; 
+	// int freq[] = { 5, 9, 12, 13, 16, 45 }; 
+
+	// int size = sizeof(arr) / sizeof(arr[0]); 
+
+	HuffmanCodes(val, n); 
+
+	return 0; 
+} 
+
+
+
+//3
+//Write a program to solve a fractional Knapsack problem using a greedy method
+#include<bits/stdc++.h>
+using namespace std;
+
+
+
+// Structure to represent an item with weight and value
+struct Item {
+    int weight;
+    int value;
+};
+
+// Comparator function to sort items by value-to-weight ratio in descending order
+bool compare(Item a, Item b) {
+    double r1 = (double)a.value / a.weight;
+    double r2 = (double)b.value / b.weight;
+    return r1 > r2;
+}
+
+// Function to calculate maximum profit for the fractional knapsack
+void fractionalKnapsack(int W, vector<Item> items) {
+    // Sort items by value-to-weight ratio
+    sort(items.begin(), items.end(), compare);
+
+    int currentWeight = 0; // Current weight of knapsack
+    double maxProfit = 0.0; // Resulting profit
+
+    // Loop through all items
+    int n=items.size();
+    for (int i=0;i<n;i++) {
+        // If adding the entire item doesn't exceed capacity
+        if (currentWeight + items[i].weight <= W) {
+            currentWeight += items[i].weight;
+            maxProfit += items[i].value;
+        } else {
+            // Take the fraction of the last item that fits in the knapsack
+            int remainingWeight = W - currentWeight;
+            maxProfit +=  remainingWeight* ((double)items[i].value / items[i].weight);
+            break;
+        }
+    }
+
+    cout<<maxProfit;
+}
+
+int main() {
+    int n, W;
+    cout << "Enter the number of items: ";
+    cin >> n;
+    cout << "Enter the capacity of the knapsack: ";
+    cin >> W;
+
+    vector<Item> items(n);
+    cout << "Enter the weight and value of each item:\n";
+    for (int i = 0; i < n; i++) {
+        cout << "Item " << i + 1 << ": ";
+        cin >> items[i].weight >> items[i].value;
+    }
+
+    
+    cout << "Maximum profit in fractional knapsack: ";
+    fractionalKnapsack(W, items);
+    return 0;
+}
+
+
+
+//4
+//Write a program to solve a 0-1 Knapsack problem using dynamic programming or branch and 
+//bound strategy
+
+#include<bits/stdc++.h>
+using namespace std;
+
+
+int knapsackDP(int W, vector<int> &weights, vector<int> &values, int n) {
+    // DP table to store the maximum profit for each weight and item combination
+    vector<vector<int>> dp(n + 1, vector<int>(W + 1, 0));
+
+    // Build the DP table
+    for (int i = 1; i <= n; i++) {
+        for (int w = 1; w <= W; w++) {
+            if (weights[i - 1] <= w) {
+                dp[i][w] = max(dp[i - 1][w], dp[i - 1][w - weights[i - 1]] + values[i - 1]);
+            } else {
+                dp[i][w] = dp[i - 1][w];
+            }
+        }
+    }
+    return dp[n][W]; // The maximum profit for the given knapsack capacity
+}
+
+int main() {
+    int n, W;
+    cout << "Enter the number of items: ";
+    cin >> n;
+    cout << "Enter the capacity of the knapsack: ";
+    cin >> W;
+
+    vector<int> weights(n), values(n);
+    cout << "Enter the weight and value of each item:\n";
+    for (int i = 0; i < n; i++) {
+        cout << "Item " << i + 1 << ": ";
+        cin >> weights[i] >> values[i];
+    }
+
+    int maxProfit = knapsackDP(W, weights, values, n);
+    cout << "Maximum profit in 0-1 knapsack (DP): " << maxProfit << endl;
+
+    return 0;
+}
+
+//5
+//Write a program to generate binomial coefficients using dynamic programming.
+
+#include<bits/stdc++.h>
+using namespace std;
+
+
+// Function to calculate binomial coefficient C(n, k) using DP
+int binomialCoefficient(int n, int k) {
+    // Create a 2D vector to store binomial coefficients
+    vector<vector<int>> C(n + 1, vector<int>(k + 1, 0));
+
+    // Fill the DP table
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= min(i, k); j++) {
+            // Base case: C(n, 0) = C(n, n) = 1
+            if (j == 0 || j == i)
+                C[i][j] = 1;
+            else
+                // Use the recurrence relation
+                C[i][j] = C[i - 1][j - 1] + C[i - 1][j];
+        }
+    }
+
+    // Return the result C(n, k)
+    return C[n][k];
+}
+
+int main() {
+    int n, k;
+    cout << "Enter n: ";
+    cin >> n;
+    cout << "Enter k: ";
+    cin >> k;
+
+    int result = binomialCoefficient(n, k);
+    cout << "Binomial Coefficient C(" << n << ", " << k << ") = " << result << endl;
+
+    return 0;
+}
+
+
+//n-queen
+//Design 8-Queens matrix having first Queen placed. Use backtracking to place remaining 
+//Queens to generate the final 8-queen’s matrix
+
+#include <bits/stdc++.h>
+using namespace std;
+
+// N will be set by user input
+int N; 
+vector<vector<int>> board;
+
+// Function to check if placing a queen at (r, c) is safe
+bool ispossible(int r, int c) {
+    // Check row and column
+    for (int j = 0; j < N; j++) {
+        if (board[r][j] == 1 || board[j][c] == 1) {
+            return false;
+        }
+    }
+
+    // Check upper left diagonal
+    for (int i = r, j = c; i >= 0 && j >= 0; i--, j--) {
+        if (board[i][j] == 1) {
+            return false;
+        }
+    }
+
+    // Check lower right diagonal
+    for (int i = r, j = c; i < N && j < N; i++, j++) {
+        if (board[i][j] == 1) {
+            return false;
+        }
+    }
+
+    // Check lower left diagonal
+    for (int i = r, j = c; i < N && j >= 0; i++, j--) {
+        if (board[i][j] == 1) {
+            return false;
+        }
+    }
+
+    // Check upper right diagonal
+    for (int i = r, j = c; i >= 0 && j < N; i--, j++) {
+        if (board[i][j] == 1) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// Function to print the chessboard
+void print() {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            cout << board[i][j] << " ";
+        }
+        cout << "\n";
+    }
+}
+
+// Recursive function to solve the N-Queens problem using backtracking
+bool solveNQueens(int r) {
+    if (r == N) { // All queens have been placed
+        print();
+        cout << "\n";
+        return true;
+    }
+
+    bool hasSolution = false;
+
+    for (int i = 0; i < N; i++) {
+        if (board[r][i] == 1) {
+            hasSolution |= solveNQueens(r + 1); // Move to next row
+        }
+        else if (ispossible(r, i)) {
+            board[r][i] = 1;          // Place queen
+            hasSolution |= solveNQueens(r + 1); // Recur for the next queen
+            board[r][i] = 0;          // Backtrack
+        }
+    }
+    
+    return hasSolution;
+}
+
+int main() {
+    cout << "Enter the value of N (Number of queens): ";
+    cin >> N;
+
+    // Initialize the NxN board with all 0s
+    board = vector<vector<int>>(N, vector<int>(N, 0));
+
+    int r, c;
+    cout << "Give Row and Column for first queen (0-based index): ";
+    cin >> r >> c;
+
+    // Place the first queen
+    board[r][c] = 1;
+
+    // Solve the N-Queens problem starting from the next row
+    if (!solveNQueens(0)) {
+        cout << "Solution does not exist.\n";
+    }
+
+    return 0;
+}
+
+
+
+//quick sort
+#include <bits/stdc++.h>
+using namespace std;
+
+
+// Partition function for deterministic quicksort
+int deterministicPartition(int arr[], int low, int high) {
+    int pivot = arr[high]; // Choose the last element as pivot
+    int i = low - 1;       // Index of the smaller element
+
+    for (int j = low; j <= high - 1; j++) {
+        // If the current element is smaller than the pivot
+        if (arr[j] < pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]); // Place the pivot in its correct position
+    return i + 1;                // Return the partition index
+}
+
+// Deterministic QuickSort function
+void deterministicQuickSort(int arr[], int low, int high) {
+    if (low < high) {
+        int pi = deterministicPartition(arr, low, high);
+
+        // Recursively sort the sub-arrays
+        deterministicQuickSort(arr, low, pi - 1);
+        deterministicQuickSort(arr, pi + 1, high);
+    }
+}
+
+
+
+
+
+// Partition function for randomized quicksort
+int randomizedPartition(int arr[], int low, int high) {
+    // Generate a random index between low and high
+    int randomPivotIndex = low + rand() % (high - low + 1);
+
+    // Swap the randomly chosen pivot with the last element
+    swap(arr[randomPivotIndex], arr[high]);
+
+    // Proceed with the usual partitioning logic
+    return deterministicPartition(arr, low, high);
+}
+
+// Randomized QuickSort function
+void randomizedQuickSort(int arr[], int low, int high) {
+    if (low < high) {
+        int pi = randomizedPartition(arr, low, high);
+
+        // Recursively sort the sub-arrays
+        randomizedQuickSort(arr, low, pi - 1);
+        randomizedQuickSort(arr, pi + 1, high);
+    }
+}
+
+// Function to print an array
+void printArray(int arr[], int size) {
+    for (int i = 0; i < size; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+}
+
+
+
+int main() {
+    srand(time(0)); // Seed for the random number generator
+
+    // Sample array
+    int arr[] = {10, 7, 8, 9, 1, 5, 2, 3};
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    cout << "Original Array: ";
+    printArray(arr, n);
+
+    // Compare deterministic and randomized QuickSort
+
+    deterministicQuickSort(arr,0,n-1);
+    printArray(arr,n);
+
+    randomizedQuickSort(arr,0,n-1);
+    printArray(arr,n);
+
+    return 0;
+}
+
